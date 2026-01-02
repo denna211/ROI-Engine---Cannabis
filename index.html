@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Operations Efficiency Diagnostic | ROI Calculator</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: linear-gradient(135deg, #0b1120 0%, #1a1f3a 100%);
+      min-height: 100vh;
+      color: #ffffff;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: rgba(17, 24, 39, 0.95);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 24px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .header h1 {
+      font-size: 28px;
+      font-weight: 800;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, #22c55e, #3b82f6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header p {
+      color: #94a3b8;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    .progress-bar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 32px;
+    }
+
+    .progress-step {
+      flex: 1;
+      height: 4px;
+      background: #334155;
+      border-radius: 2px;
+      transition: background 0.3s ease;
+    }
+
+    .progress-step.active {
+      background: linear-gradient(135deg, #22c55e, #15803d);
+    }
+
+    .progress-step.completed {
+      background: #22c55e;
+    }
+
+    .form-group {
+      margin-bottom: 24px;
+    }
+
+    .form-group label {
+      display: block;
+      color: #e2e8f0;
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .form-group label .required {
+      color: #ef4444;
+      margin-left: 4px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 14px 16px;
+      color: #fff;
+      font-size: 16px;
+      transition: border-color 0.2s ease;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #3b82f6;
+    }
+
+    .form-group select {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 20px;
+      padding-right: 40px;
+    }
+
+    .form-group select option {
+      background: #1e293b;
+      color: #fff;
+    }
+
+    .scale-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .scale-btn {
+      flex: 1;
+      min-width: 40px;
+      padding: 12px 8px;
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid #334155;
+      border-radius: 8px;
+      color: #94a3b8;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .scale-btn:hover {
+      border-color: #3b82f6;
+      color: #fff;
+    }
+
+    .scale-btn.selected {
+      background: linear-gradient(135deg, #22c55e, #15803d);
+      border-color: #22c55e;
+      color: #fff;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #22c55e 0%, #15803d 100%);
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      margin-top: 16px;
+    }
+
+    .submit-btn:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .secondary-btn {
+      background: transparent;
+      border: 2px solid #334155;
+    }
+
+    .secondary-btn:hover {
+      border-color: #3b82f6;
+      background: rgba(59, 130, 246, 0.1);
+    }
+
+    /* Stage Transitions */
+    .stage {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .stage.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Thank You Screen */
+    .thank-you {
+      text-align: center;
+      padding: 20px 0;
+    }
+
+    .thank-you .icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #22c55e, #15803d);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      font-size: 40px;
+    }
+
+    .thank-you h2 {
+      font-size: 24px;
+      margin-bottom: 16px;
+    }
+
+    .thank-you p {
+      color: #94a3b8;
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+
+    .info-box {
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      border-radius: 12px;
+      padding: 16px;
+      margin: 24px 0;
+      text-align: left;
+    }
+
+    .info-box h3 {
+      color: #3b82f6;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    .info-box p {
+      color: #94a3b8;
+      font-size: 14px;
+      margin: 0;
+    }
+
+    /* Final Confirmation */
+    .final-screen {
+      text-align: center;
+    }
+
+    .final-screen .icon {
+      width: 100px;
+      height: 100px;
+      background: linear-gradient(135deg, #22c55e, #15803d);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      font-size: 50px;
+    }
+
+    /* Loading Spinner */
+    .spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 0.8s ease-in-out infinite;
+      margin-right: 8px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Error Message */
+    .error-message {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 8px;
+      padding: 12px 16px;
+      color: #ef4444;
+      font-size: 14px;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .error-message.show {
+      display: block;
+    }
+
+    /* Help Text */
+    .help-text {
+      color: #64748b;
+      font-size: 12px;
+      margin-top: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <!-- Progress Bar -->
+      <div class="progress-bar">
+        <div class="progress-step active" id="progress-1"></div>
+        <div class="progress-step" id="progress-2"></div>
+        <div class="progress-step" id="progress-3"></div>
+      </div>
+
+      <!-- Error Message Container -->
+      <div class="error-message" id="error-message"></div>
+
+      <!-- STAGE 1: Initial Discovery -->
+      <div class="stage active" id="stage-1">
+        <div class="header">
+          <h1>Operations Efficiency Diagnostic</h1>
+          <p>Identify and quantify operational inefficiencies in your packaging and compliance workflows. Complete this quick assessment to discover your optimization opportunities.</p>
+        </div>
+
+        <form id="form-stage-1">
+          <div class="form-group">
+            <label>What industry sector are you in?<span class="required">*</span></label>
+            <select name="industry" required>
+              <option value="">Select your industry...</option>
+              <option value="Cannabis Production / Cultivation">Cannabis Production / Cultivation</option>
+              <option value="Cannabis Processing / Extraction">Cannabis Processing / Extraction</option>
+              <option value="Cannabis Retail / Dispensary">Cannabis Retail / Dispensary</option>
+              <option value="Pharmaceutical Packaging">Pharmaceutical Packaging</option>
+              <option value="Nutraceutical / Supplements">Nutraceutical / Supplements</option>
+              <option value="Food & Beverage Packaging">Food & Beverage Packaging</option>
+              <option value="Contract Packaging (CPG)">Contract Packaging (CPG)</option>
+              <option value="Healthcare / Medical Devices">Healthcare / Medical Devices</option>
+              <option value="Other Regulated Industry">Other Regulated Industry</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>What's your approximate annual revenue?<span class="required">*</span></label>
+            <select name="annual_revenue" required>
+              <option value="">Select revenue range...</option>
+              <option value="Under $500K">Under $500K</option>
+              <option value="$500K - $1M">$500K - $1M</option>
+              <option value="$1M - $3M">$1M - $3M</option>
+              <option value="$3M - $5M">$3M - $5M</option>
+              <option value="$5M - $10M">$5M - $10M</option>
+              <option value="$10M - $25M">$10M - $25M</option>
+              <option value="$25M+">$25M+</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>How many staff are dedicated to manual data entry, packaging, or compliance reporting?<span class="required">*</span></label>
+            <select name="manual_staff_count" required>
+              <option value="">Select staffing level...</option>
+              <option value="0-1 FTE">0-1 full-time equivalent</option>
+              <option value="2-3 FTE">2-3 full-time equivalents</option>
+              <option value="4-6 FTE">4-6 full-time equivalents</option>
+              <option value="7-10 FTE">7-10 full-time equivalents</option>
+              <option value="11-20 FTE">11-20 full-time equivalents</option>
+              <option value="20+ FTE">20+ full-time equivalents</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>How critical is optimizing your packaging/compliance/data workflow to your 2026 growth strategy?<span class="required">*</span></label>
+            <div class="scale-group" id="importance-scale">
+              <button type="button" class="scale-btn" data-value="1">1</button>
+              <button type="button" class="scale-btn" data-value="2">2</button>
+              <button type="button" class="scale-btn" data-value="3">3</button>
+              <button type="button" class="scale-btn" data-value="4">4</button>
+              <button type="button" class="scale-btn" data-value="5">5</button>
+              <button type="button" class="scale-btn" data-value="6">6</button>
+              <button type="button" class="scale-btn" data-value="7">7</button>
+              <button type="button" class="scale-btn" data-value="8">8</button>
+              <button type="button" class="scale-btn" data-value="9">9</button>
+              <button type="button" class="scale-btn" data-value="10">10</button>
+            </div>
+            <input type="hidden" name="process_importance" id="process-importance" required>
+            <p class="help-text">1 = Not important, 10 = Mission critical</p>
+          </div>
+
+          <div class="form-group">
+            <label>Company Name</label>
+            <input type="text" name="company_name" placeholder="Enter your company name">
+          </div>
+
+          <div class="form-group">
+            <label>Your Professional Email<span class="required">*</span></label>
+            <input type="email" name="email" placeholder="you@company.com" required>
+            <p class="help-text">We'll send your custom Analysis and Outcome report here</p>
+          </div>
+
+          <button type="submit" class="submit-btn" id="submit-stage-1">
+            Get My Initial Assessment →
+          </button>
+        </form>
+      </div>
+
+      <!-- STAGE 2: Thank You + Deep Dive Prompt -->
+      <div class="stage" id="stage-2">
+        <div class="thank-you">
+          <div class="icon">✓</div>
+          <h2>Thank You!</h2>
+          <p>We've captured your information and started preparing your initial assessment.</p>
+          
+          <div class="info-box">
+            <h3>🔍 Want a Full ROI Analysis?</h3>
+            <p>Answer 3 more questions to unlock your complete Operational Efficiency Report with specific cost savings calculations and payback timeline.</p>
+          </div>
+
+          <button type="button" class="submit-btn" id="continue-to-deep-dive">
+            Yes, Show Me My Full ROI →
+          </button>
+          <button type="button" class="submit-btn secondary-btn" id="skip-deep-dive">
+            No Thanks, Just Send the Basic Report
+          </button>
+        </div>
+      </div>
+
+      <!-- STAGE 3: Deep Dive Questions -->
+      <div class="stage" id="stage-3">
+        <div class="header">
+          <h1>Deep Dive Analysis</h1>
+          <p>These final questions will help us calculate your exact ROI potential and identify your biggest cost-saving opportunities.</p>
+        </div>
+
+        <form id="form-stage-3">
+          <div class="form-group">
+            <label>How many hours per month does your team spend fixing errors, managing recalls, or reconciling data?<span class="required">*</span></label>
+            <select name="error_rework_hours" required>
+              <option value="">Select hours per month...</option>
+              <option value="Under 5 hours">Under 5 hours</option>
+              <option value="5-10 hours">5-10 hours</option>
+              <option value="10-20 hours">10-20 hours</option>
+              <option value="20-40 hours">20-40 hours</option>
+              <option value="40-80 hours">40-80 hours</option>
+              <option value="80+ hours">80+ hours</option>
+            </select>
+            <p class="help-text">Include time spent on corrections, rework, and compliance remediation</p>
+          </div>
+
+          <div class="form-group">
+            <label>What's your current daily output capacity, and how much more could you handle?<span class="required">*</span></label>
+            <select name="throughput_gap" required>
+              <option value="">Select capacity situation...</option>
+              <option value="At max capacity - can't grow">At max capacity - can't grow without more staff</option>
+              <option value="10-20% below potential">Could handle 10-20% more with same team</option>
+              <option value="20-40% below potential">Could handle 20-40% more with same team</option>
+              <option value="40-60% below potential">Could handle 40-60% more with same team</option>
+              <option value="60%+ below potential">Could handle 60%+ more - major bottlenecks</option>
+              <option value="Unsure">Unsure / Haven't measured</option>
+            </select>
+            <p class="help-text">This helps us calculate your opportunity cost</p>
+          </div>
+
+          <div class="form-group">
+            <label>What's your estimated annual budget for operational software or hardware upgrades?<span class="required">*</span></label>
+            <select name="tech_budget" required>
+              <option value="">Select budget range...</option>
+              <option value="Under $10K">Under $10,000</option>
+              <option value="$10K-$25K">$10,000 - $25,000</option>
+              <option value="$25K-$50K">$25,000 - $50,000</option>
+              <option value="$50K-$100K">$50,000 - $100,000</option>
+              <option value="$100K-$250K">$100,000 - $250,000</option>
+              <option value="$250K+">$250,000+</option>
+              <option value="No dedicated budget">No dedicated budget</option>
+            </select>
+            <p class="help-text">Used to calculate your time-to-breakeven</p>
+          </div>
+
+          <button type="submit" class="submit-btn" id="submit-stage-3">
+            Calculate My Full ROI →
+          </button>
+        </form>
+      </div>
+
+      <!-- STAGE 4: Final Confirmation -->
+      <div class="stage" id="stage-4">
+        <div class="final-screen">
+          <div class="icon">📊</div>
+          <h2>Your ROI Report is Being Prepared!</h2>
+          <p>Our AI engine is analyzing your operational data and calculating your personalized efficiency gains.</p>
+          
+          <div class="info-box">
+            <h3>📬 Check Your Inbox</h3>
+            <p>Your comprehensive Operations Efficiency Report will arrive within 5 minutes at the email address you provided. It will include:</p>
+            <ul style="color: #94a3b8; margin-top: 12px; padding-left: 20px; text-align: left;">
+              <li>Direct Labor Savings Analysis</li>
+              <li>Efficiency Multiplier Calculation</li>
+              <li>Hard ROI Percentage</li>
+              <li>Time-to-Breakeven Timeline</li>
+              <li>Top 3 Optimization Priorities</li>
+            </ul>
+          </div>
+
+          <p style="color: #64748b; font-size: 14px; margin-top: 24px;">
+            Questions? Reply directly to the report email or contact us at <a href="mailto:info@example.com" style="color: #3b82f6;">info@example.com</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ============================================
+    // CONFIGURATION - UPDATE THESE WEBHOOK URLs
+    // ============================================
+    const CONFIG = {
+      // n8n webhook URLs - replace with your actual webhook URLs
+      STAGE_1_WEBHOOK: 'YOUR_N8N_STAGE_1_WEBHOOK_URL',
+      STAGE_2_WEBHOOK: 'YOUR_N8N_STAGE_2_WEBHOOK_URL',
+      // Set to true to enable console logging for debugging
+      DEBUG: true
+    };
+
+    // ============================================
+    // STATE MANAGEMENT
+    // ============================================
+    let formState = {
+      stage1Data: null,
+      stage2Data: null,
+      currentStage: 1
+    };
+
+    // ============================================
+    // UTILITY FUNCTIONS
+    // ============================================
+    function log(message, data = null) {
+      if (CONFIG.DEBUG) {
+        console.log(`[ROI Calculator] ${message}`, data || '');
+      }
+    }
+
+    function showError(message) {
+      const errorEl = document.getElementById('error-message');
+      errorEl.textContent = message;
+      errorEl.classList.add('show');
+      setTimeout(() => errorEl.classList.remove('show'), 5000);
+    }
+
+    function setLoading(buttonId, loading) {
+      const btn = document.getElementById(buttonId);
+      if (loading) {
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span>Processing...';
+      } else {
+        btn.disabled = false;
+        // Reset button text based on which button
+        if (buttonId === 'submit-stage-1') btn.innerHTML = 'Get My Initial Assessment →';
+        if (buttonId === 'submit-stage-3') btn.innerHTML = 'Calculate My Full ROI →';
+      }
+    }
+
+    function goToStage(stageNum) {
+      // Hide all stages
+      document.querySelectorAll('.stage').forEach(s => s.classList.remove('active'));
+      
+      // Show target stage
+      document.getElementById(`stage-${stageNum}`).classList.add('active');
+      
+      // Update progress bar
+      for (let i = 1; i <= 3; i++) {
+        const step = document.getElementById(`progress-${i}`);
+        step.classList.remove('active', 'completed');
+        if (i < stageNum) step.classList.add('completed');
+        if (i === stageNum || (stageNum === 4 && i === 3)) step.classList.add('active');
+      }
+      
+      formState.currentStage = stageNum;
+      log(`Moved to stage ${stageNum}`);
+    }
+
+    // ============================================
+    // SCALE BUTTON HANDLER
+    // ============================================
+    document.querySelectorAll('#importance-scale .scale-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        // Remove selected from all
+        document.querySelectorAll('#importance-scale .scale-btn').forEach(b => b.classList.remove('selected'));
+        // Add selected to clicked
+        this.classList.add('selected');
+        // Set hidden input value
+        document.getElementById('process-importance').value = this.dataset.value;
+      });
+    });
+
+    // ============================================
+    // STAGE 1 FORM SUBMISSION
+    // ============================================
+    document.getElementById('form-stage-1').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      // Validate importance scale
+      if (!document.getElementById('process-importance').value) {
+        showError('Please select how critical workflow optimization is to your growth strategy.');
+        return;
+      }
+
+      const formData = new FormData(this);
+      const data = Object.fromEntries(formData.entries());
+      
+      log('Stage 1 form data:', data);
+      setLoading('submit-stage-1', true);
+
+      try {
+        const response = await fetch(CONFIG.STAGE_1_WEBHOOK, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            stage: 'initial_discovery',
+            timestamp: new Date().toISOString(),
+            data: data
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+
+        // Store stage 1 data for later
+        formState.stage1Data = data;
+        
+        // Move to stage 2 (thank you screen)
+        goToStage(2);
+        
+      } catch (error) {
+        log('Stage 1 submission error:', error);
+        showError('There was an issue submitting your information. Please try again.');
+      } finally {
+        setLoading('submit-stage-1', false);
+      }
+    });
+
+    // ============================================
+    // STAGE 2 BUTTONS (CONTINUE OR SKIP)
+    // ============================================
+    document.getElementById('continue-to-deep-dive').addEventListener('click', function() {
+      goToStage(3);
+    });
+
+    document.getElementById('skip-deep-dive').addEventListener('click', async function() {
+      // Send basic report request
+      try {
+        await fetch(CONFIG.STAGE_2_WEBHOOK, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            stage: 'basic_report_only',
+            timestamp: new Date().toISOString(),
+            stage1Data: formState.stage1Data,
+            deepDiveCompleted: false
+          })
+        });
+      } catch (error) {
+        log('Skip submission error:', error);
+      }
+      
+      // Go to final screen
+      goToStage(4);
+    });
+
+    // ============================================
+    // STAGE 3 FORM SUBMISSION (DEEP DIVE)
+    // ============================================
+    document.getElementById('form-stage-3').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const formData = new FormData(this);
+      const data = Object.fromEntries(formData.entries());
+      
+      log('Stage 3 form data:', data);
+      setLoading('submit-stage-3', true);
+
+      try {
+        const response = await fetch(CONFIG.STAGE_2_WEBHOOK, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            stage: 'full_roi_analysis',
+            timestamp: new Date().toISOString(),
+            stage1Data: formState.stage1Data,
+            stage2Data: data,
+            deepDiveCompleted: true
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+
+        // Store stage 2 data
+        formState.stage2Data = data;
+        
+        // Move to final confirmation
+        goToStage(4);
+        
+      } catch (error) {
+        log('Stage 3 submission error:', error);
+        showError('There was an issue submitting your analysis. Please try again.');
+      } finally {
+        setLoading('submit-stage-3', false);
+      }
+    });
+
+    // ============================================
+    // INITIALIZATION
+    // ============================================
+    log('ROI Calculator initialized');
+    log('Stage 1 Webhook:', CONFIG.STAGE_1_WEBHOOK);
+    log('Stage 2 Webhook:', CONFIG.STAGE_2_WEBHOOK);
+  </script>
+</body>
+</html>
