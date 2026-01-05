@@ -275,6 +275,52 @@
       font-size: 50px;
     }
 
+    /* Simple Thank You Screen */
+    .simple-thank-you {
+      text-align: center;
+      padding: 40px 0;
+    }
+
+    .simple-thank-you .icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #22c55e, #15803d);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      font-size: 40px;
+    }
+
+    .simple-thank-you h2 {
+      font-size: 28px;
+      margin-bottom: 20px;
+      color: #fff;
+    }
+
+    .simple-thank-you p {
+      color: #94a3b8;
+      font-size: 16px;
+      line-height: 1.7;
+      margin-bottom: 16px;
+    }
+
+    .simple-thank-you .contact-text {
+      color: #64748b;
+      font-size: 14px;
+      margin-top: 32px;
+    }
+
+    .simple-thank-you .contact-text a {
+      color: #3b82f6;
+      text-decoration: none;
+    }
+
+    .simple-thank-you .contact-text a:hover {
+      text-decoration: underline;
+    }
+
     /* Loading Spinner */
     .spinner {
       display: inline-block;
@@ -343,19 +389,21 @@
               <option value="Cannabis Production / Cultivation">Cannabis Production / Cultivation</option>
               <option value="Cannabis Processing / Extraction">Cannabis Processing / Extraction</option>
               <option value="Cannabis Retail / Dispensary">Cannabis Retail / Dispensary</option>
-              <option value="Pharmaceutical Packaging">Pharmaceutical Packaging</option>
+              <option value="Packaging/Supplies">Packaging/Supplies</option>
+              <option value="Software/Machinery">Software/Machinery</option>
+              <option value="Pharmaceutical">Pharmaceutical</option>
               <option value="Nutraceutical / Supplements">Nutraceutical / Supplements</option>
-              <option value="Food & Beverage Packaging">Food & Beverage Packaging</option>
-              <option value="Contract Packaging (CPG)">Contract Packaging (CPG)</option>
+              <option value="Food & Beverage">Food & Beverage</option>
               <option value="Healthcare / Medical Devices">Healthcare / Medical Devices</option>
+              <option value="Ancillary">Ancillary</option>
               <option value="Other Regulated Industry">Other Regulated Industry</option>
             </select>
           </div>
 
           <div class="form-group">
-            <label>What's your approximate annual revenue?<span class="required">*</span></label>
-            <select name="annual_revenue" required>
-              <option value="">Select revenue range...</option>
+            <label>What's your approximate business size?<span class="required">*</span></label>
+            <select name="business_size" required>
+              <option value="">Select size range...</option>
               <option value="Under $500K">Under $500K</option>
               <option value="$500K - $1M">$500K - $1M</option>
               <option value="$1M - $3M">$1M - $3M</option>
@@ -409,7 +457,7 @@
           </div>
 
           <button type="submit" class="submit-btn" id="submit-stage-1">
-            Get My Initial Assessment →
+            Submit
           </button>
         </form>
       </div>
@@ -427,10 +475,10 @@
           </div>
 
           <button type="button" class="submit-btn" id="continue-to-deep-dive">
-            Yes, Show Me My Full ROI →
+            Yes, Unlock My Full Report (3 more questions) →
           </button>
           <button type="button" class="submit-btn secondary-btn" id="skip-deep-dive">
-            No Thanks, Just Send the Basic Report
+            No, just email my initial assessment
           </button>
         </div>
       </div>
@@ -487,21 +535,21 @@
           </div>
 
           <button type="submit" class="submit-btn" id="submit-stage-3">
-            Calculate My Full ROI →
+            Request My Full Efficiency Report →
           </button>
         </form>
       </div>
 
-      <!-- STAGE 4: Final Confirmation -->
+      <!-- STAGE 4: Final Confirmation (Full Report) -->
       <div class="stage" id="stage-4">
         <div class="final-screen">
           <div class="icon">📊</div>
-          <h2>Your ROI Report is Being Prepared!</h2>
+          <h2>Your Efficiency Report is Being Prepared!</h2>
           <p>Our AI engine is analyzing your operational data and calculating your personalized efficiency gains.</p>
           
           <div class="info-box">
             <h3>📬 Check Your Inbox</h3>
-            <p>Your comprehensive Operations Efficiency Report will arrive within 5 minutes at the email address you provided. It will include:</p>
+            <p>Your comprehensive Operations Efficiency Report will arrive within 3-4 hours at the email address you provided. It will include:</p>
             <ul style="color: #94a3b8; margin-top: 12px; padding-left: 20px; text-align: left;">
               <li>Direct Labor Savings Analysis</li>
               <li>Efficiency Multiplier Calculation</li>
@@ -512,7 +560,20 @@
           </div>
 
           <p style="color: #64748b; font-size: 14px; margin-top: 24px;">
-            Questions? Reply directly to the report email or contact us at <a href="mailto:info@example.com" style="color: #3b82f6;">info@example.com</a>
+            Questions? Reply directly to the report email or contact us at <a href="mailto:contact@med-lock.com" style="color: #3b82f6;">contact@med-lock.com</a>
+          </p>
+        </div>
+      </div>
+
+      <!-- STAGE 5: Simple Thank You (Initial Assessment Only) -->
+      <div class="stage" id="stage-5">
+        <div class="simple-thank-you">
+          <div class="icon">✓</div>
+          <h2>Thank You</h2>
+          <p>Your initial assessment will be emailed to you shortly at the email address you provided.</p>
+          
+          <p class="contact-text">
+            Questions? Reply directly to the report email or contact us at <a href="mailto:contact@med-lock.com">contact@med-lock.com</a>
           </p>
         </div>
       </div>
@@ -523,7 +584,7 @@
     // ============================================
     // CONFIGURATION - UPDATE THESE WEBHOOK URLs
     // ============================================
-const CONFIG = {
+    const CONFIG = {
       // n8n webhook URLs - replace with your actual webhook URLs
       STAGE_1_WEBHOOK: 'https://denna211.app.n8n.cloud/webhook/roi-stage-1',
       STAGE_2_WEBHOOK: 'https://denna211.app.n8n.cloud/webhook/roi-stage-2',
@@ -564,8 +625,8 @@ const CONFIG = {
       } else {
         btn.disabled = false;
         // Reset button text based on which button
-        if (buttonId === 'submit-stage-1') btn.innerHTML = 'Get My Initial Assessment →';
-        if (buttonId === 'submit-stage-3') btn.innerHTML = 'Calculate My Full ROI →';
+        if (buttonId === 'submit-stage-1') btn.innerHTML = 'Submit';
+        if (buttonId === 'submit-stage-3') btn.innerHTML = 'Request My Full Efficiency Report →';
       }
     }
 
@@ -580,8 +641,17 @@ const CONFIG = {
       for (let i = 1; i <= 3; i++) {
         const step = document.getElementById(`progress-${i}`);
         step.classList.remove('active', 'completed');
-        if (i < stageNum) step.classList.add('completed');
-        if (i === stageNum || (stageNum === 4 && i === 3)) step.classList.add('active');
+        if (i < stageNum || stageNum >= 4) step.classList.add('completed');
+        if (i === stageNum || (stageNum >= 4 && i === 3)) step.classList.add('active');
+      }
+      
+      // For stage 5 (simple thank you), mark all progress as completed
+      if (stageNum === 5) {
+        for (let i = 1; i <= 3; i++) {
+          const step = document.getElementById(`progress-${i}`);
+          step.classList.remove('active');
+          step.classList.add('completed');
+        }
       }
       
       formState.currentStage = stageNum;
@@ -677,8 +747,8 @@ const CONFIG = {
         log('Skip submission error:', error);
       }
       
-      // Go to final screen
-      goToStage(4);
+      // Go to simple thank you screen (stage 5)
+      goToStage(5);
     });
 
     // ============================================
@@ -715,7 +785,7 @@ const CONFIG = {
         // Store stage 2 data
         formState.stage2Data = data;
         
-        // Move to final confirmation
+        // Move to final confirmation (stage 4)
         goToStage(4);
         
       } catch (error) {
