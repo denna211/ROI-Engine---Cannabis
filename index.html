@@ -609,7 +609,7 @@
           </div>
 
           <p style="color: #64748b; font-size: 14px; margin-top: 24px;">
-            Questions? Reply directly to the report email or contact us at <a href="/cdn-cgi/l/email-protection#3d5e5253495c5e497d5058591051525e56135e5250" style="color: #3b82f6;"><span class="__cf_email__" data-cfemail="aecdc1c0dacfcddaeec3cbca83c2c1cdc580cdc1c3">[email&#160;protected]</span></a>
+            Questions? Reply directly to the report email or contact us at <a href="mailto:contact@med-lock.com" style="color: #3b82f6;">contact@med-lock.com</a>
           </p>
 
           <button onclick="window.location.reload()" class="submit-btn secondary-btn" style="margin-top: 32px;">
@@ -629,7 +629,7 @@
           <p>Your initial assessment will be emailed to you shortly at the email address you provided.</p>
           
           <p class="contact-text">
-            Questions? Reply directly to the report email or contact us at <a href="/cdn-cgi/l/email-protection#2c4f4342584d4f586c4149480140434f47024f4341"><span class="__cf_email__" data-cfemail="98fbf7f6ecf9fbecd8f5fdfcb5f4f7fbf3b6fbf7f5">[email&#160;protected]</span></a>
+            Questions? Reply directly to the report email or contact us at <a href="mailto:contact@med-lock.com">contact@med-lock.com</a>
           </p>
 
           <button onclick="window.location.reload()" class="submit-btn secondary-btn" style="margin-top: 32px;">
@@ -848,4 +848,20 @@
         }
 
         // Store stage 2 data
-        formState.stage2Dat
+        formState.stage2Data = data;
+        
+        // Move to final confirmation (stage 4)
+        goToStage(4);
+        
+      } catch (error) {
+        log('Stage 3 submission error:', error);
+        showError('There was an issue submitting your analysis. Please try again.');
+      } finally {
+        setLoading('submit-stage-3', false);
+      }
+    });
+  </script>
+    </div>
+  </div>
+</body>
+</html>
