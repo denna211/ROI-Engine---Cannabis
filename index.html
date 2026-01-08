@@ -852,4 +852,13 @@
         
       } catch (error) {
         log('Stage 3 submission error:', error);
-        showError('There was an issue submitting your analysis. Please try again.'
+        showError('There was an issue submitting your analysis. Please try again.');
+      } finally {
+        setLoading('submit-stage-3', false);
+      }
+    });
+  </script>
+    </div>
+  </div>
+</body>
+</html>
