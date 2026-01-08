@@ -359,6 +359,38 @@
       font-size: 12px;
       margin-top: 6px;
     }
+
+    /* Logo Styling */
+    .logo-container {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .logo-container img {
+      max-width: 200px;
+      height: auto;
+      object-fit: contain;
+    }
+
+    /* Footer Styling */
+    .page-footer {
+      text-align: center;
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid rgba(59, 130, 246, 0.2);
+      color: #64748b;
+      font-size: 13px;
+    }
+
+    .page-footer a {
+      color: #e5684b;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .page-footer a:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
@@ -369,6 +401,11 @@
         <div class="progress-step active" id="progress-1"></div>
         <div class="progress-step" id="progress-2"></div>
         <div class="progress-step" id="progress-3"></div>
+      </div>
+
+      <!-- Logo -->
+      <div class="logo-container">
+        <img src="MedLock_Logo.png" alt="MedLock Logo">
       </div>
 
       <!-- Error Message Container -->
@@ -459,6 +496,10 @@
           <button type="submit" class="submit-btn" id="submit-stage-1">
             Submit
           </button>
+
+          <div class="page-footer">
+            Designed and Powered by <a href="https://ad-wise.ca" target="_blank">Ad-Wise.ca</a>
+          </div>
         </form>
       </div>
 
@@ -480,6 +521,10 @@
           <button type="button" class="submit-btn secondary-btn" id="skip-deep-dive">
             Just Email My Initial Assessment
           </button>
+
+          <div class="page-footer">
+            Designed and Powered by <a href="https://ad-wise.ca" target="_blank">Ad-Wise.ca</a>
+          </div>
         </div>
       </div>
 
@@ -537,6 +582,10 @@
           <button type="submit" class="submit-btn" id="submit-stage-3">
             Request My Full Efficiency Report →
           </button>
+
+          <div class="page-footer">
+            Designed and Powered by <a href="https://ad-wise.ca" target="_blank">Ad-Wise.ca</a>
+          </div>
         </form>
       </div>
 
@@ -560,12 +609,16 @@
           </div>
 
           <p style="color: #64748b; font-size: 14px; margin-top: 24px;">
-            Questions? Reply directly to the report email or contact us at <a href="mailto:contact@med-lock.com" style="color: #3b82f6;">contact@med-lock.com</a>
+            Questions? Reply directly to the report email or contact us at <a href="/cdn-cgi/l/email-protection#4e2d21203a2f2d3a0e232b2a6322212d25602d2123" style="color: #3b82f6;"><span class="__cf_email__" data-cfemail="20434f4e54414354604d45440d4c4f434b0e434f4d">[email&#160;protected]</span></a>
           </p>
 
           <button onclick="window.location.reload()" class="submit-btn secondary-btn" style="margin-top: 32px;">
             🔄 Start a New Assessment
           </button>
+
+          <div class="page-footer">
+            Designed and Powered by <a href="https://ad-wise.ca" target="_blank">Ad-Wise.ca</a>
+          </div>
         </div>
       </div>
 
@@ -576,16 +629,20 @@
           <p>Your initial assessment will be emailed to you shortly at the email address you provided.</p>
           
           <p class="contact-text">
-            Questions? Reply directly to the report email or contact us at <a href="mailto:contact@med-lock.com">contact@med-lock.com</a>
+            Questions? Reply directly to the report email or contact us at <a href="/cdn-cgi/l/email-protection#7615191802171502361b13125b1a19151d5815191b"><span class="__cf_email__" data-cfemail="31525e5f45505245715c54551c5d5e525a1f525e5c">[email&#160;protected]</span></a>
           </p>
 
           <button onclick="window.location.reload()" class="submit-btn secondary-btn" style="margin-top: 32px;">
             🔄 Start a New Assessment
           </button>
+
+          <div class="page-footer">
+            Designed and Powered by <a href="https://ad-wise.ca" target="_blank">Ad-Wise.ca</a>
+          </div>
         </div>
       </div>
 
-  <script>
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
     // ============================================
     // CONFIGURATION - UPDATE THESE WEBHOOK URLs
     // ============================================
@@ -795,18 +852,4 @@
         
       } catch (error) {
         log('Stage 3 submission error:', error);
-        showError('There was an issue submitting your analysis. Please try again.');
-      } finally {
-        setLoading('submit-stage-3', false);
-      }
-    });
-
-    // ============================================
-    // INITIALIZATION
-    // ============================================
-    log('ROI Calculator initialized');
-    log('Stage 1 Webhook:', CONFIG.STAGE_1_WEBHOOK);
-    log('Stage 2 Webhook:', CONFIG.STAGE_2_WEBHOOK);
-  </script>
-</body>
-</html>
+        showError('There was an issue submitting your analysis. Please try again.'
